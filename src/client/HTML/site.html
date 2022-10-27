@@ -1,0 +1,205 @@
+/*
+MIT License
+
+Copyright (c) 2022 Software-Inginier, Popov Kirill Mihailovich
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+const char site[] PROGMEM = R"=====(
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name=\ "viewport\" content=\ "width=device-width, initial-scale=1\">
+    <meta name="MobileOptimized" content="width">
+    <meta http-equiv='Content-type' content='text/html' charset=utf-8>
+    <link rel="stylesheet" href="bootstrapCSS">
+    <div class="container-fluid border mt-1 pt-1">
+        <div class="container ">
+            <span style="font-size:30px;cursor:pointer" onclick="openNav()">☰ </span>
+            <img class="mb-1" width="50" height="auto" alt="" src="data:image/png;base64,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">
+            <label id='SKZType' class="mt-1" style="font-size:25px;"></label>
+        </div>
+    </div>
+    <style>
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+        
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #c9c9c9;
+            display: block;
+            transition: 0.3s;
+        }
+        
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+        
+        .sidenav .rot:hover {
+            color: #fd0000;
+        }
+        
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        
+        @media screen and (min-height: 576px) {
+            .sidenav {
+                padding-top: 60px;
+            }
+            .sidenav a {
+                font-size: 15px;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var obj = JSON.parse(xhttp.responseText);
+                    document.getElementById('SKZType').innerHTML = obj.SKZType;
+                    document.getElementById('User').innerHTML = obj.user;
+                }
+            };
+            xhttp.open('GET', '/typeSKZ', true);
+            xhttp.send();
+        });
+    </script>
+</head>
+
+<body class="rounded">
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn rot" onclick="closeNav()">×</a>
+        <a href="#">Текущий пользователь:
+            <h4 id="User"></h4></a>
+        <a href="#">Список пользователей ▼</a>
+        <a href="changePass">Сменить пароль</a>
+        <a href="regUser">Регистрация пользователя</a>
+        <a href="delUser">Удаление пользователя</a>
+
+        <a href="/" class="rot">Выход</a>
+    </div>
+    <script type="text/javascript" src="functions"></script>
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+
+    <div class="container text-white  mt-2">
+        <div id='border1' class="row text-center col-xl col-lg col-md mx-auto px-0 bg-secondary rounded-top ">
+            <div id="btn1" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6 pt-1 d-flex align-items-xl-center flex-column align-items-xl-center border border-secondary rounded ml-md-auto h-xl-25 p-2" style="background:black" onclick="button1(this) ">
+                <div class="px-3"> Напряжение </div>
+                <div> ( U ) </div>
+                <div id='U' class="mb-5" style="font-size: 200% "> 0 </div>
+            </div>
+            <div id="btn2" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6 pt-1 d-flex align-items-xl-center flex-column align-items-xl-center border border-secondary rounded mr-md-auto px-0  h-xl-25 p-2" style="background:black;" onclick="button2(this) ">
+                <div class="px-5"> Ток </div>
+                <div> ( I ) </div>
+                <div id='I' class="mb-5" style="font-size: 200% "> 0 </div>
+            </div>
+            <div id="btn3" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6 pt-1 d-flex align-items-xl-center flex-column align-items-xl-center border border-secondary rounded ml-md-auto px-0  h-xl-25 p-2" style="background:black;" onclick="button3(this) ">
+                <div> Поляризационный потенциал </div>
+                <div> ( Uпп ) </div>
+                <div id='Upp' class="mb-5" style="font-size: 200% "> 0 </div>
+            </div>
+            <div id="btn4" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6  pt-1 d-flex align-items-xl-center flex-column align-items-xl-center border border-secondary rounded mr-md-auto mx-lg-auto px-0 h-xl-25 p-2" style="background:black;" onclick="button4(this) ">
+                <div class="px-4"> Суммарный потенциал </div>
+                <div> ( Uсп ) </div>
+                <div id='Usp' class="mb-5" style="font-size: 200% "> 0 </div>
+            </div>
+        </div>
+
+        <div class="col-xl col-lg mx-auto bg-secondary secondary rounded-bottom py-1 ">
+            <form action='btnSITE' metod='POST' style=" max-width: 1200px">
+                <div id='div1' class="form-group mx-auto mt-2">
+                    <p> <input disabled class="form-control w-100" size='40' type='number' title='Пожалуйста, сначала выберите режим стабилизации!' placeholder='Выберите режим' name='num' id='num' style="height:50px; font-size: 150% "></p>
+                </div>
+                <p></p>
+                <div id='div2'>
+                    <p> <input disabled class='btn btn-primary rounded w-100' size='10' type='submit' value='Установить' style="height:50px; width: 650px; font-size: 150% "> </p>
+                </div>
+            </form>
+            <div class="table-responsive-xl ">
+                <table class="table table-bordered text-white table-dark ">
+                    <tbody>
+                        <tr>
+                            <th scope="col"> Выбранный режим </th>
+                            <th scope="col">
+                                <div id='label3'> </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th scope="row ">Заданное значение</th>
+                            <td>
+                                <div id='label4'> 0 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row ">Электросчётчик</th>
+                            <td>
+                                <div id='label2'> 0 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row ">Счётчик времени наработки</th>
+                            <td>
+                                <div id='label5'> 0 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row ">Счётчик времени под защитой</th>
+                            <td>
+                                <div id='label6'> 0 </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div> </div>
+        </div>
+    </div>
+    <p class="mt-5 mb-3 text-muted text-center">&copy; 2021</p>
+</body>
+
+</html>
+)=====";

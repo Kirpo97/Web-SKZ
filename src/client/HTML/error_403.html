@@ -1,0 +1,191 @@
+/*
+MIT License
+
+Copyright (c) 2022 Software-Inginier, Popov Kirill Mihailovich
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+const char error403[] PROGMEM = R"=====(
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Аутентификация</title>
+
+    <link href="bootstrapCSS" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+        
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+        
+        html,
+        body {
+            height: 100%;
+        }
+        
+        body {
+            display: flex;
+            align-items: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #f5f5f5;
+        }
+        
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+        }
+        
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+        
+        .form-signin .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+        
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+        
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+        
+        .modal .modal_content {
+            background-color: #c74545;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid rgb(75, 75, 75);
+            width: 80%;
+            z-index: 99999;
+            color: #f5f5f5;
+        }
+        
+        .modal .modal_content .close_modal_window {
+            color: rgb(253, 253, 253);
+            float: center;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var obj = JSON.parse(xhttp.responseText);
+                    document.getElementById('SKZType').innerHTML = obj.SKZType;
+                }
+            };
+            xhttp.open('GET', '/typeSKZ', true);
+            xhttp.send();
+        });
+    </script>
+</head>
+
+<body class="text-center">
+
+    <div id="my_modal" class="modal">
+        <div class="modal_content">
+            <p>Неправильный логин или пароль!</p>
+            <p>Закройте окно и повторите попытку</p>
+            <span class="close_modal_window">×</span>
+        </div>
+    </div>
+
+    <main class="form-signin">
+        <img src="data:image/png;base64,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"
+            alt="" />
+        <h1 class="h1 mb-3 fw-normal">Вход</h1>
+        <h1 id='SKZType' class="h4 mb-3 fw-normal"></h1>
+        <form action="SubmitAuntefication" method="POST">
+            <div><input type='text' id='inputLogin' name='inputLogin' class="form-control" placeholder="Логин" required autofocus></div>
+            <div><input type='password' id='inputPassword' name='inputPassword' class="form-control" placeholder="Пароль" required></div>
+            <div><button class="w-100 btn btn-lg btn-primary" type="submit">Войти</button></div>
+        </form>
+        <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
+    </main>
+
+    <script>
+        var modal = document.getElementById("my_modal");
+        var btn = document.getElementById("btn_modal_window");
+        var span = document.getElementsByClassName("close_modal_window")[0];
+
+        document.addEventListener("DOMContentLoaded", function() {
+            modal.style.display = "block";
+        });
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>
+)=====";
